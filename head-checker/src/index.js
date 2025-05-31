@@ -1,15 +1,26 @@
-/**
- * Welcome to Cloudflare Workers! This is your first worker.
- *
- * - Run `npm run dev` in your terminal to start a development server
- * - Open a browser tab at http://localhost:8787/ to see your worker in action
- * - Run `npm run deploy` to publish your worker
- *
- * Learn more at https://developers.cloudflare.com/workers/
- */
-
 export default {
-	async fetch(request, env, ctx) {
-		return new Response('Hello World!');
-	},
+  async fetch(request, env, ctx) {
+    const { searchParams } = new URL(request.url);
+
+    const url = searchParams.get("url");
+    if (!url) {
+      return new Response(
+        JSON.stringify({ error: "Missing 'url' parameter" }),
+        { status: 400, headers: { "content-type": "application/json" } }
+      );
+    }
+
+    try {
+      const headResp = await fetch(url, { method: "HEAD", redirect: "manual" });
+      return new Response(
+        JSON.stringify({ status: headResp.status }),
+        { headers: { "content-type": "application/json" } }
+      );
+    } catch (e) {
+      return new Response(
+        JSON.stringify({ error: "Fetch failed", details: e.message }),
+        { status: 500, headers: { "content-type": "application/json" } }
+      );
+    }
+  },
 };
