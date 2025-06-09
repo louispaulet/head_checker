@@ -21,4 +21,17 @@ describe('head-checker worker', () => {
     expect(response.status).toBe(200);
     expect(response.headers.get('Access-Control-Allow-Origin')).toBe('*');
   });
+
+  it('returns 400 when urls parameter is missing (batch)', async () => {
+    const request = new Request('http://example.com/batch', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({}),
+    });
+    const ctx = createExecutionContext();
+    const response = await worker.fetch(request, env, ctx);
+    await waitOnExecutionContext(ctx);
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({ error: "Missing 'urls' parameter" });
+  });
 });

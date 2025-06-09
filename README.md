@@ -52,6 +52,35 @@ If the `url` parameter is missing, the response will be:
 }
 ```
 
+### Batch Usage
+
+Send a `POST` request to `/batch` with a JSON body containing a `urls` array:
+
+```
+{
+  "urls": ["https://example.com", "https://example.org"]
+}
+```
+
+The response will map each URL to its HTTP status code:
+
+```json
+{
+  "results": {
+    "https://example.com": 200,
+    "https://example.org": 404
+  }
+}
+```
+
+If the `urls` parameter is missing or not an array, the response will be:
+
+```json
+{
+  "error": "Missing 'urls' parameter"
+}
+```
+
 ## Development
 
 To run the worker locally in development mode:
